@@ -1,0 +1,76 @@
+---
+title: "A9_Lee_20180554"
+author: "Gloria Lee"
+date: "2023-03-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 3 
+```{r}
+
+library(doParallel)
+library(parallel)
+library(foreach)
+
+```
+# 4
+```{r}
+
+detectCores()
+
+# I have 8 cores
+
+```
+# 5&6
+```{r}
+
+before1 = Sys.time()
+
+for(i in 1:4000){
+  mean(rnorm(100000, mean = 10, sd = 3))
+}
+
+after1 = Sys.time()
+
+TimeTaken1 = after1 - before1
+print(TimeTaken1)
+
+```
+
+# 7
+```{r}
+
+paste("The time it will take to run a multi-threaded program is", TimeTaken1/8, "seconds, which is 1/8 of the time it takes to run a serial program")
+
+```
+# 8&9
+```{r}
+
+Cores <- parallel::makeCluster(detectCores()) 
+doParallel::registerDoParallel(Cores) 
+
+before2 = Sys.time()
+
+foreach(i = 1:4000, .combine =rbind) %dopar% {
+  mean(rnorm(100000, mean = 10, sd = 3))
+}
+
+parallel::stopCluster(Cores) 
+
+after2 = Sys.time()
+
+TimeTaken2 = after2 - before2
+print(TimeTaken2)
+
+```
+
+# 10
+```{r}
+
+paste("The theoretical run time was", TimeTaken1/8, "seconds while the actual run time was", TimeTaken2, "seconds. The theoretical was shorter than the actual run time because it did not take into account the time it would require to combine the data from all the work done by the different cores.")
+
+```
